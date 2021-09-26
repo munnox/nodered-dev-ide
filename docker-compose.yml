@@ -1,0 +1,46 @@
+# Originally Source From https://nodered.org/docs/getting-started/docker#docker-stack--docker-compose
+# Augmented to make it more to my liking and used with some of my ansible roles.
+
+version: '3.4'
+
+services:
+  ide:
+    build:
+      context: ./
+    image: ide:0.0.1
+    restart: unless-stopped
+    ports:
+      - "1880:1880"
+    networks:
+      - node-red-net
+    volumes:
+      - type: volume
+        source: node-red-data
+        target: /data
+      # - type: bind
+      #   source: ./data
+      #   target: /data
+
+      # TODO To remove as a potential security risk
+      - type: bind
+        source: ./
+        target: /local
+      - type: bind
+        source: ./backup
+        target: /backup
+      - type: bind
+        source: ./ssh
+        target: /usr/src/node-red/.ssh
+    environment:
+      - TZ=Europe/London
+    healthcheck:
+      test: curl -s http://localhost:1880 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  node-red-data:
+
+networks:
+  node-red-net:

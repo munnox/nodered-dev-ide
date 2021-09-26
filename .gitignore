@@ -1,0 +1,4 @@
+data/*
+*.override.yml
+backup/*
+ssh/*
