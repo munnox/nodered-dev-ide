@@ -31,6 +31,14 @@ services:
       - type: bind
         source: ./ssh
         target: /usr/src/node-red/.ssh
+      # Allow the NodeRED IDE access to the Docker instance
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    # Required for permission for the docker socket
+    group_add:
+      # - $DOCKER_GRP
+      - docker
     environment:
       - TZ=Europe/London
     healthcheck:
