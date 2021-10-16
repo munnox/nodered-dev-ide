@@ -2,15 +2,14 @@
 # https://github.com//node-red/node-red-docker
 
 FROM nodered/node-red:2.0.6-14
+ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
 
 USER root
+RUN addgroup --g ${DOCKER_GRP} docker
+RUN addgroup node-red docker
 
-RUN apk add gcc python3-dev libffi-dev openssl-dev
-
+RUN apk add --no-cache gcc python3-dev libffi-dev openssl-dev docker
 # build-base linux-headers musl-dev
-
-    # && pip install --no-cache-dir cryptography \
-    # && rustup self uninstall -y
 
 USER node-red
 
@@ -20,11 +19,10 @@ RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rust
     && chmod +x /tmp/rustup-init \
     && /tmp/rustup-init -y
 
-RUn pip3 install ansible
+RUN pip3 install ansible
 
 # COPY package.json /data/package.json
 COPY settings.js /data/settings.js
-
 # RUN mkdir -p /data/projects/.sshkeys/
 
 # COPY ssh/known_hosts /usr/src/node-red/.ssh/known_hosts
