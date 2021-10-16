@@ -19,10 +19,11 @@ sudo chown 1000:1000 -R ssh
 mkdir backup
 
 # Build server
-docker-compose build --no-cache
+./build.sh
 # Run the IDE
-docker-compose up -d
+./run.sh
 
 # Pull settings.js from the nodered ide container
 docker-compose exec ide cp /data/settings.js /backup/settings.js
+docker-compose exec ide cp /data/flow.js /backup/flow.js
 ```
