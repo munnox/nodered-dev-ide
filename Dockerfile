@@ -49,6 +49,8 @@ RUN chown node-red:node-red -R /certs/ && chmod -R a-rw,u+r /certs/
 
 USER node-red
 
+RUN npm install @node-red-contrib-themes/dracula
+
 # COPY package.json /data/package.json
 COPY settings.js /data/settings.js
 # RUN mkdir -p /data/projects/.sshkeys/

@@ -43,4 +43,11 @@ sudo chmod -R ug+wr ./certs
 # Pull settings.js from the nodered ide container
 docker-compose exec ide cp /data/settings.js /backup/settings.js
 docker-compose exec ide cp /data/flow.js /backup/flow.js
+
+# On a setting update to a running IDE USE to rebuild
+./build.sh
+# THe following will move the setting file into the right place
+docker cp settings.js nodered-dev-ide_ide_1:/data/
+# then restart
+./run.sh
 ```
