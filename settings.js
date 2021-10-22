@@ -89,11 +89,12 @@ module.exports = {
      * for details of its contents.
      */
 
+
     /** Option 1: static object */
-    //https: {
-    //  key: require("fs").readFileSync('privkey.pem'),
-    //  cert: require("fs").readFileSync('cert.pem')
-    //},
+    https: {
+     key: require("fs").readFileSync('/certs/certs.key'),
+     cert: require("fs").readFileSync('/certs/certs.cert')
+    },
 
     /** Option 2: function that returns the HTTP configuration object */
     // https: function() {

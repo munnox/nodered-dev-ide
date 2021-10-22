@@ -38,10 +38,6 @@ services:
       - type: bind
         source: ./backup
         target: /backup
-      # Allows injection of an SSH key for the projects and conections
-      - type: bind
-        source: ./ssh
-        target: /usr/src/node-red/.ssh
     # # Required for permission for the docker socket
     # group_add:
     #   - ${DOCKER_GRP}
