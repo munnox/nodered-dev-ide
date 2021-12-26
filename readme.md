@@ -9,8 +9,8 @@ To run:
 mkdir ssh
 ssh-keygen -f ssh/id_rsa
 ssh-keyscan <git_server_name> >> ssh/fingerprintkey
-ssh-keygen -lf fingerprintkey
-cat fingerprintkey >> ssh/known_hosts
+ssh-keygen -lf ssh/fingerprintkey
+cat ssh/fingerprintkey >> ssh/known_hosts
 # Correct permission
 # TODO room for improvement here
 sudo chown 1000:1000 -R ssh
