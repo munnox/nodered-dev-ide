@@ -12,6 +12,7 @@ ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
 ARG GIT_SERVER=github.com
 
 USER root
+# Add a docker group with the right Docker group ID to sync with the host.
 RUN addgroup --g ${DOCKER_GRP} docker
 RUN addgroup node-red docker
 

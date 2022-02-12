@@ -2,19 +2,23 @@
 
 Basic NodeRED server to allow an IDE. This augments the dockerhub node red image to add useful module and settings.
 
+Releasing the IDE build code under GPLv3.
+
+Basically this is a work in progress and please share alike. But I would love to know if it was useful :).
+
 To run and useful commands:
 
 ```bash
 # Prepare ssh keys and host file for git projects
 mkdir ssh
 export GIT_SERVER=<git_server_name>
-ssh-keygen -f ssh/id_rsa
+ssh-keygen -t ed25519 -f ssh/id_ed25519
 # Go get git server finger print
 ssh-keyscan $GIT_SERVER >> ssh/fingerprintkey
 ssh-keygen -lf ssh/fingerprintkey
 cat ssh/fingerprintkey >> ssh/known_hosts
 
-# Correct permission
+# Correct permission for key file in development server.
 # TODO room for improvement here
 sudo chown $USER:$USER -R ssh
 sudo chmod -R a-rw,ug+r ssh
@@ -22,7 +26,8 @@ sudo chmod -R a-rw,ug+r ssh
 # Prep a backup folder
 mkdir backup certs
 
-# Make a selfsign password
+# Make a selfsign certificate the subject line should be made
+# more specific to the current use case.
 openssl req \
     -new \
     -newkey rsa:4096 \
