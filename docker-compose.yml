@@ -13,8 +13,8 @@ services:
     restart: unless-stopped
     ports:
       - "1880:1880"
-    networks:
-      - node-red-net
+    # networks:
+    #   - node-red-net
     volumes:
       - type: volume
         source: node-red-data
@@ -57,9 +57,53 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    labels:
+      - "traefik.http.routers.nodered.rule=PathPrefix(`/nodered`)"
+      # - "traefik.http.routers.twrmdash.service=twrmdash"
+      - "traefik.http.routers.nodered.tls=true"
+      - "traefik.http.middlewares.test-stripprefix.stripprefix.prefixes=/nodered,/nodered/"
+      # Referencing a middleware
+      - "traefik.http.routers.nodered.middlewares=test-stripprefix"
+      - "traefik.http.services.nodered.loadbalancer.server.port=1880"
+      - "traefik.http.middlewares.nodered.headers.SSLRedirect=true"
+      - "traefik.http.middlewares.nodered.headers.STSSeconds=315360000"
+      - "traefik.http.middlewares.nodered.headers.browserXSSFilter=true"
+      - "traefik.http.middlewares.nodered.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.nodered.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.nodered.headers.STSIncludeSubdomains=true"
+      - "traefik.http.middlewares.nodered.headers.STSPreload=true"
+      - "traefik.http.middlewares.nodered.headers.frameDeny=true"
+
+  traefikproxy:
+    image: traefik:v2.6
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker'
+      - '--providers.file.filename=/traefik/certificates.yml'
+      - '--entrypoints.http=true'
+      - '--entrypoints.http.address=:80'
+      # - '--entrypoints.http.http.redirections.entrypoint.to=https'
+      # - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.https=true'
+      - '--entrypoints.https.address=:443'
+      - '--log=true'
+      - '--log.level=DEBUG'
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./certs
+        target: /certs
+      - type: bind
+        source: ./traefik
+        target: /traefik
+    ports:
+    - "80:80"
+    - "443:443"
+    - "5004:8080"
 
 volumes:
   node-red-data:
 
-networks:
-  node-red-net:
+# networks:
+#   node-red-net:
