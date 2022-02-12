@@ -2,3 +2,4 @@ data/*
 *.override.yml
 backup/*
 ssh/*
+certs/*
