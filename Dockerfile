@@ -7,7 +7,7 @@
 # https://hub.docker.com/r/nodered/node-red/
 # https://github.com//node-red/node-red-docker
 
-FROM nodered/node-red:2.0.6-14
+FROM nodered/node-red:2.2.0-14
 ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
 ARG GIT_SERVER=github.com
 
@@ -16,7 +16,7 @@ USER root
 RUN addgroup --g ${DOCKER_GRP} docker
 RUN addgroup node-red docker
 
-RUN apk add --no-cache gcc python3-dev libffi-dev openssl-dev docker
+RUN apk add --no-cache gcc python3 python3-dev libffi-dev openssl-dev docker
 # build-base linux-headers musl-dev
 
 USER node-red
@@ -29,26 +29,25 @@ RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rust
     && /tmp/rustup-init -y
 
 # Add ansible to the container for play time
-RUN pip3 install ansible
+RUN python3 -m pip install ansible
 
-USER root
-# Move the SSH keys in to the container
-COPY ssh /usr/src/node-red/.ssh
+# USER root
+# # Move the SSH keys in to the container
+# COPY ssh /usr/src/node-red/.ssh
 
-# Get current server fingerprint
-RUN ssh-keyscan ${GIT_SERVER} >> /usr/src/node-red/.ssh/fingerprintkey
-RUN ssh-keygen -lf /usr/src/node-red/.ssh/fingerprintkey
-RUN cat /usr/src/node-red/.ssh/fingerprintkey >> /usr/src/node-red/.ssh/known_hosts
+# # Get current server fingerprint
+# RUN ssh-keyscan ${GIT_SERVER} >> /usr/src/node-red/.ssh/fingerprintkey
+# RUN ssh-keygen -lf /usr/src/node-red/.ssh/fingerprintkey
+# RUN cat /usr/src/node-red/.ssh/fingerprintkey >> /usr/src/node-red/.ssh/known_hosts
 
-# Correct permission on the copied folder
-RUN chown node-red:node-red -R /usr/src/node-red/.ssh/ && chmod -R a-rw,u+r /usr/src/node-red/.ssh
+# # Correct permission on the copied folder
+# RUN chown node-red:node-red -R /usr/src/node-red/.ssh/ && chmod -R a-rw,u+r /usr/src/node-red/.ssh
 
-# Move the server certificates in to the container
-COPY certs /certs/
-# Correct the permission for certs
-RUN chown node-red:node-red -R /certs/ && chmod -R a-rw,u+r /certs/
-
-USER node-red
+# # Move the server certificates in to the container
+# COPY certs /certs/
+# # Correct the permission for certs
+# RUN chown node-red:node-red -R /certs/ && chmod -R a-rw,u+r /certs/
+# USER node-red
 
 RUN npm install @node-red-contrib-themes/dracula
 
