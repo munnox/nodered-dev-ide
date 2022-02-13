@@ -16,7 +16,7 @@ USER root
 RUN addgroup --g ${DOCKER_GRP} docker
 RUN addgroup node-red docker
 
-RUN apk add --no-cache gcc python3 python3-dev libffi-dev openssl-dev docker
+RUN apk add --no-cache gcc python3 py3-pip python3-dev libffi-dev openssl-dev docker
 # build-base linux-headers musl-dev
 
 USER node-red
