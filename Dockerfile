@@ -8,30 +8,30 @@
 # https://github.com//node-red/node-red-docker
 
 FROM nodered/node-red:2.2.0-14
-ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
-ARG GIT_SERVER=github.com
+# ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
+# ARG GIT_SERVER=github.com
 
-USER root
-RUN npm install -g passport passport-keycloak-oauth2-oidc
 
 # Add a docker group with the right Docker group ID to sync with the host.
-RUN addgroup --g ${DOCKER_GRP} docker
-RUN addgroup node-red docker
-
-RUN apk add --no-cache gcc python3 py3-pip python3-dev libffi-dev openssl-dev docker
-# build-base linux-headers musl-dev
+USER root
+# RUN addgroup --g ${DOCKER_GRP} docker
+# RUN addgroup node-red docker
 
 USER node-red
-
-ENV PATH="/usr/src/node-red/.cargo/bin:/usr/src/node-red/.local/bin:${PATH}"
-
 # Add Rust to the container
+ENV PATH="/usr/src/node-red/.cargo/bin:/usr/src/node-red/.local/bin:${PATH}"
 RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
     && chmod +x /tmp/rustup-init \
     && /tmp/rustup-init -y
 
+# Add Python library
+USER root
+RUN apk add --no-cache gcc python3 py3-pip python3-dev libffi-dev openssl-dev docker
+# build-base linux-headers musl-dev
+USER node-red
 # Add ansible to the container for play time
 RUN python3 -m pip install ansible
+
 
 # USER root
 # # Move the SSH keys in to the container
@@ -51,10 +51,14 @@ RUN python3 -m pip install ansible
 # RUN chown node-red:node-red -R /certs/ && chmod -R a-rw,u+r /certs/
 # USER node-red
 
+# USER root
+USER node-red
 RUN npm install @node-red-contrib-themes/dracula
+RUN npm install passport passport-keycloak-oauth2-oidc
 
 # COPY package.json /data/package.json
 COPY settings.js /data/settings.js
 # RUN mkdir -p /data/projects/.sshkeys/
 
+USER node-red
 # ENTRYPOINT ["/bin/bash"]
