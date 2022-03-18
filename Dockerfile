@@ -12,6 +12,8 @@ ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
 ARG GIT_SERVER=github.com
 
 USER root
+RUN npm install -g passport passport-keycloak-oauth2-oidc
+
 # Add a docker group with the right Docker group ID to sync with the host.
 RUN addgroup --g ${DOCKER_GRP} docker
 RUN addgroup node-red docker

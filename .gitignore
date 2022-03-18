@@ -3,3 +3,4 @@ data/*
 backup/*
 ssh/*
 certs/*
+settings.js

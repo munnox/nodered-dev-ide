@@ -73,13 +73,48 @@ module.exports = {
     /** To password protect the Node-RED editor and admin API, the following
      * property can be used. See http://nodered.org/docs/security.html for details.
      */
+    // example auth from https://discourse.nodered.org/t/oauth-openid-login-with-keycloak/54144
     adminAuth: {
+        // type: "strategy",
+        // strategy: {
+        //     name: "keycloak",
+        //     label: 'Sign in',
+        //     icon: "fa-lock",
+        //     strategy: require("passport-keycloak-oauth2-oidc").Strategy,
+        //     options: {
+        //         clientID: "nodered",
+        //         realm: 'master',
+        //         publicClient: "false",
+        //         clientSecret: "[deleted]",
+        //         sslRequired: "external",
+        //         authServerURL: "https://keycloak.example.com/auth",
+        //         callbackURL: "https://node-red.example.com/auth/strategy/callback",
+        //         verify: function (token, tokenSecret, profile, done) {
+        //             //console.log(profile)
+        //             // if (profile._json.groups.includes("the-group-name")) {
+        //             //     profile.username = 'the-group-name'
+        //             // }
+        //             // users: [{
+        //             //     username: "the-group-name",
+        //             //     permissions: "*"
+        //             // }]
+        //             done(null, profile);
+        //         }
+        //     },
+        // },
         type: "credentials",
-        users: [{
-            username: "admin",
-            password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
-            permissions: "*"
-        }]
+        users: [
+            {
+                username: "admin",
+                password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
+                permissions: "*"
+            },
+            {
+                username: "test",
+                password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
+                permissions: "read"
+            },
+        ]
     },
 
     /** The following property can be used to enable HTTPS
