@@ -1,7 +1,7 @@
 # Originally Source From https://nodered.org/docs/getting-started/docker#docker-stack--docker-compose
 # Augmented to make it more to my liking and used with some of my ansible roles.
 
-version: '3.4'
+version: "3.4"
 
 services:
   ide:
@@ -55,6 +55,8 @@ services:
     #   # - docker
     environment:
       TZ: Europe/London
+      # NODE_TLS_REJECT_UNAUTHORIZED: 0
+      NODE_EXTRA_CA_CERTS: /certs/certs.cert
     healthcheck:
       test: curl -s http://localhost:1880 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
       interval: 30s
@@ -80,17 +82,17 @@ services:
   traefikproxy:
     image: traefik:v2.6
     command:
-      - '--api.insecure=true'
-      - '--providers.docker'
-      - '--providers.file.filename=/traefik/certificates.yml'
-      - '--entrypoints.http=true'
-      - '--entrypoints.http.address=:80'
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.file.filename=/traefik/certificates.yml"
+      - "--entrypoints.http=true"
+      - "--entrypoints.http.address=:80"
       # - '--entrypoints.http.http.redirections.entrypoint.to=https'
       # - '--entrypoints.http.http.redirections.entrypoint.scheme=https'
-      - '--entrypoints.https=true'
-      - '--entrypoints.https.address=:443'
-      - '--log=true'
-      - '--log.level=DEBUG'
+      - "--entrypoints.https=true"
+      - "--entrypoints.https.address=:443"
+      - "--log=true"
+      - "--log.level=DEBUG"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -101,20 +103,69 @@ services:
         source: ./traefik
         target: /traefik
     ports:
-    - "80:80"
-    - "443:443"
-    # View Traefik UI
-    - "8081:8080"
+      - "80:80"
+      - "443:443"
+      # View Traefik UI
+      - "8081:8080"
 
   keycloak:
-    # image: quay.io/keycloak/keycloak:16.1.0
-    image: jboss/keycloak
-    ports:
-      - 8080:8080
+    # image: prebuilt_keycloak:latest #quay.io/keycloak/keycloak:17.0.0 #legacy
+    image: quay.io/keycloak/keycloak:17.0.0 #legacy
     environment:
-      # Placeholders
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
+      KC_HOSTNAME: notebook.munnox.com:8443
+      KC_DB: postgres
+      KC_DB_SCHEMA: public
+      KC_DB_URL: postgres
+      KC_DB_URL_HOST: postgreskc
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: robert
+      KEYCLOAK_ADMIN_PASSWORD: pass
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    volumes:
+      - "./certs:/certs"
+    ports:
+      - 8880:8080
+      - 8443:8443
+    depends_on:
+      - postgreskc
+    command: start --auto-build \
+      --https-certificate-file=/certs/certs.cert \
+      --https-certificate-key-file=/certs/certs.key \
+      --https-protocols=TLSv1.3,TLSv1.2
+    # networks:
+    #   - kc-net
 
+  postgreskc:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak
+    volumes:
+      - ./postgresdb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "keycloak"]
+      interval: 5s
+      retries: 5
+    restart: always
+    # networks:
+    #   - kc-net
+
+  pgadmin:
+    image: dpage/pgadmin4:6.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: pass
+      PGADMIN_ENABLE_TLS: "true"
+    volumes:
+      # - "./pgadmin:/var/lib/pgadmin"
+      - "./certs/certs.cert:/certs/server.cert"
+      - "./certs/certs.key:/certs/server.key"
+      # - "./testservers.json:/pgadmin4/servers.json"
+    ports:
+      - 10443:443
 # volumes:
 #   node-red-data:
