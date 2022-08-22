@@ -54,7 +54,7 @@ RUN python3 -m pip install ansible
 # USER root
 USER node-red
 RUN npm install @node-red-contrib-themes/dracula
-RUN npm install passport passport-keycloak-oauth2-oidc
+RUN npm install passport passport-keycloak-oauth2-oidc passport-azure-ad
 
 # COPY package.json /data/package.json
 COPY settings.js /data/settings.js
