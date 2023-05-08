@@ -7,7 +7,7 @@
 # https://hub.docker.com/r/nodered/node-red/
 # https://github.com//node-red/node-red-docker
 
-FROM nodered/node-red:2.2.0-14
+FROM nodered/node-red:3.0.2
 # ARG DOCKER_GRP=$(getent group docker | cut -d: -f3)
 # ARG GIT_SERVER=github.com
 
@@ -19,10 +19,10 @@ USER root
 
 USER node-red
 # Add Rust to the container
-ENV PATH="/usr/src/node-red/.cargo/bin:/usr/src/node-red/.local/bin:${PATH}"
-RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
-    && chmod +x /tmp/rustup-init \
-    && /tmp/rustup-init -y
+# ENV PATH="/usr/src/node-red/.cargo/bin:/usr/src/node-red/.local/bin:${PATH}"
+# RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
+#     && chmod +x /tmp/rustup-init \
+#     && /tmp/rustup-init -y
 
 # Add Python library
 USER root
